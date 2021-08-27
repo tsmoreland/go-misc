@@ -24,6 +24,9 @@ jobs:
       with:
         go-version: 1.17
 
+    - name: WhereAmI
+      run: pwd
+      working-directory: logic-calculator-cli
     - name: Build
       run: go build -v 
       working-directory: ./logic-calulator-cli
