@@ -5,10 +5,12 @@ on:
     branches: [ main ]
     paths:
     - logic-calculator-cli/**
+    - .github/workflows/logic-calculator-cli-CI.yml
   pull_request:
     branches: [ main ]
     paths:
     - logic-calculator-cli/**
+    - .github/workflows/logic-calculator-cli-CI.yml
 
 jobs:
 
