@@ -10,6 +10,7 @@
       "**/.svn": true,
       "**/.hg": true,
       "**/CVS": true,
+      "**/.dccache": true,
       ".gitignore": true,
     },
     "[go]": {
