@@ -4,11 +4,11 @@ on:
   push:
     branches: [ main ]
     paths:
-    - ./logic-calculator-cli
+    - logic-calculator-cli/**
   pull_request:
     branches: [ main ]
     paths:
-    - ./logic-calculator-cli
+    - logic-calculator-cli/**
 
 jobs:
 
