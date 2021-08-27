@@ -53,6 +53,8 @@ bld/
 # Visual Studio Code cache/options directory
 .vscode/
 
+.dccache
+
 # Visual Studio 2017 auto generated files
 Generated\ Files/
 
