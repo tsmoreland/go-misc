@@ -28,9 +28,9 @@ jobs:
       run: pwd
       working-directory: logic-calculator-cli
     - name: Build
-      run: go build -v ./
-      working-directory: ./logic-calulator-cli
+      run: go build -v .
+      working-directory: logic-calculator-cli
 
     - name: Test
-      run: go test -v ./
-      working-directory: ./logic-calculator-cli
+      run: go test -v .
+      working-directory: logic-calculator-cli
