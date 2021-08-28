@@ -18,7 +18,11 @@ func main() {
 		return
 	}
 
-	actual := op.Solve()
+	actual, err := op.Solve()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
 	if actual != int64(expected) {
 		fmt.Printf("%v does not equal %v", actual, expected)

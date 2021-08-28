@@ -7,53 +7,45 @@ import (
 )
 
 type Operation struct {
-	left  *Operation
-	value string
-	right *Operation
+	left      *Operation
+	operation string
+	right     *Operation
+	value     int64
 }
 
 func NewOperation(source string) (*Operation, error) {
-	op := &Operation{}
+	op := &Operation{value: 0}
 
 	return op.parse(source)
 }
 
 func (op *Operation) parse(source string) (*Operation, error) {
 	// todo: investigate to see if we can use slice and keep string functionality (pass as *string to minimize copy)
-	// order of operations = ! ^ & |  -> NOT XOR AND OR
+	// order of operations = ~ ^ & |  -> NOT XOR AND OR, ~ can be accomplished by 1^M where M is the value but that doesn't involve left/right so may have to be done in place
 
 	source = strings.Replace(source, " ", "", -1)
 
 	// todo change to for loop over the operator types, after the loop try to see if it's a number
 
-	found, err := op.process(source, "^")
-	if found {
-		return op, nil
-	} else if err != nil {
-		return nil, err
-	}
-	found, err = op.process(source, "&")
-	if found {
-		return op, nil
-	} else if err != nil {
-		return nil, err
+	operators := []string{"^", "&", "|"}
+	for _, operator := range operators {
+		found, err := op.process(source, operator)
+		if found {
+			return op, nil
+		} else if err != nil {
+			return nil, err
+		}
 	}
 
-	found, err = op.process(source, "|")
-	if found {
-		return op, nil
-	} else if err != nil {
-		return nil, err
-	}
-
-	_, err = strconv.ParseInt(source, 10, 64)
+	value, err := strconv.ParseInt(source, 10, 64)
 	if err != nil {
 		return nil, err
 	}
 
+	op.value = value
 	op.left = nil
 	op.right = nil
-	op.value = source
+	op.operation = "value"
 
 	return op, nil
 }
@@ -67,7 +59,7 @@ func (op *Operation) process(source string, operator string) (bool, error) {
 		}
 		op.left = left
 		op.right = right
-		op.value = operator
+		op.operation = operator
 		return true, nil
 	}
 	return false, nil
@@ -97,6 +89,40 @@ func split(index int, source string) (*Operation, *Operation, error) {
 	return left, right, nil
 }
 
-func (op *Operation) Solve() int64 {
-	return 0
+func (op *Operation) Solve() (int64, error) {
+
+	if op.operation == "value" {
+		return op.value, nil
+	}
+
+	if op.left == nil {
+		return 0, errors.New("left operation undefined")
+	}
+	if op.right == nil {
+		return 0, errors.New("rigth operation undefined")
+	}
+
+	value, error := op.left.Solve()
+	if error != nil {
+		return 0, error
+	}
+	leftValue := value
+	value, error = op.right.Solve()
+	if error != nil {
+		return 0, error
+	}
+
+	switch op.operation {
+	case "~":
+		// can be achieved with 1 ^ ??? doesn't require left and right though
+		return 0, errors.New("not implemented yet")
+	case "^":
+		return leftValue ^ value, nil
+	case "|":
+		return leftValue | value, nil
+	case "&":
+		return leftValue & value, nil
+	default:
+		return 0, errors.New("undefined operation" + op.operation)
+	}
 }
