@@ -13,7 +13,7 @@ type Operation struct {
 	value     int64
 }
 
-func NewOperation(source string) (*Operation, error) {
+func New(source string) (*Operation, error) {
 	op := &Operation{value: 0}
 
 	return op.parse(source)
@@ -50,9 +50,23 @@ func (op *Operation) parse(source string) (*Operation, error) {
 	return op, nil
 }
 
+func numberOfSides(operator string) int16 {
+	switch operator {
+	case "~":
+		return 1
+	default:
+		return 2
+	}
+}
+
 func (op *Operation) process(source string, operator string) (bool, error) {
 	index := strings.LastIndex(source, operator)
-	if index != -1 {
+	if index == -1 {
+		return false, nil
+	}
+
+	switch numberOfSides(operator) {
+	case 2:
 		left, right, err := split(index, source)
 		if err != nil {
 			return false, err
@@ -60,9 +74,21 @@ func (op *Operation) process(source string, operator string) (bool, error) {
 		op.left = left
 		op.right = right
 		op.operation = operator
-		return true, nil
+	case 1:
+		op.left = nil
+		op.right = nil
+		// ??? we need something like split here, first pass will only support something like
+		// ~x | y  I'd expect ~x to be treated as a result like x on its own (i.e. calculate the result in place)
+		// that result lets say X would then be the left of X | y
+		// the question is how to we get just ~x and not get, we need something like split (maybe even split itself)
+		// but where we expct left to come back as nil
+		return false, errors.New("not implemented")
+
+	default:
+		return true, errors.New("unrecognized equation")
 	}
-	return false, nil
+
+	return true, nil
 }
 
 func split(index int, source string) (*Operation, *Operation, error) {
@@ -75,13 +101,13 @@ func split(index int, source string) (*Operation, *Operation, error) {
 
 	var left *Operation
 	var err error
-	left, err = NewOperation(source[0:index])
+	left, err = New(source[0:index])
 	if err != nil {
 		return nil, nil, err
 	}
 
 	var right *Operation
-	right, err = NewOperation(source[index+1:])
+	right, err = New(source[index+1:])
 	if err != nil {
 		return nil, nil, err
 	}
