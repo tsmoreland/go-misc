@@ -14,11 +14,9 @@ func main() {
 	if len(argsWithoutProgram) >= 1 {
 		equation = argsWithoutProgram[0]
 	} else {
-		equation = "3 | 2 ^ 1 & 3"
+		fmt.Printf("usage %v \"equation here\"\n", os.Args[0])
+		return
 	}
-
-	expected := 3 | 2 ^ 1&3
-	fmt.Println(expected)
 
 	// order here is  3 or ((2 xor 1) and 1) =
 	op, err := calculator.New(equation)
@@ -30,11 +28,7 @@ func main() {
 	actual, err := op.Solve()
 	if err != nil {
 		fmt.Println(err)
-		return
+	} else {
+		fmt.Printf("%v", actual)
 	}
-
-	if actual != int64(expected) {
-		fmt.Printf("%v does not equal %v", actual, expected)
-	}
-
 }
