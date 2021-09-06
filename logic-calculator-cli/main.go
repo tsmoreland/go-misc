@@ -19,7 +19,7 @@ func main() {
 	}
 
 	// order here is  3 or ((2 xor 1) and 1) =
-	op, err := calculator.New(equation)
+	op, err := calculator.NewOperation(equation)
 	if err != nil {
 		fmt.Println(err)
 		return

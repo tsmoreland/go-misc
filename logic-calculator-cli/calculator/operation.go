@@ -13,7 +13,7 @@ type Operation struct {
 	value     int64
 }
 
-func New(source string) (*Operation, error) {
+func NewOperation(source string) (*Operation, error) {
 	op := &Operation{value: 0}
 
 	return op.parse(source)
@@ -101,13 +101,13 @@ func split(index int, source string) (*Operation, *Operation, error) {
 
 	var left *Operation
 	var err error
-	left, err = New(source[0:index])
+	left, err = NewOperation(source[0:index])
 	if err != nil {
 		return nil, nil, err
 	}
 
 	var right *Operation
-	right, err = New(source[index+1:])
+	right, err = NewOperation(source[index+1:])
 	if err != nil {
 		return nil, nil, err
 	}
