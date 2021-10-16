@@ -18,5 +18,5 @@ func ParseKeyValue(source string) (key, value string, err error) {
 	remaining := strings.TrimSpace(string(source[3:]))
 	fmt.Print(remaining)
 
-	return "", "", fmt.Errorf("not implemented")
+	return "", "", nil
 }
