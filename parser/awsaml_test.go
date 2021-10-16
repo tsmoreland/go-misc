@@ -6,7 +6,7 @@ import (
 )
 
 func TestParseKeyValueReturnsErrorWhenInputHasInsufficientLength(t *testing.T) {
-	_, _, err := ParseKeyValue("")
+	_, err := ParseKeyValue("")
 
 	if err == nil {
 		t.Error("ParseKeyValue did not return error")
@@ -17,7 +17,7 @@ func TestParseKeyValueReturnsErrorWhenInputHasInsufficientLength(t *testing.T) {
 }
 
 func TestParseKeyValueReturnsErrorWhenInputDoesNotStartWithSet(t *testing.T) {
-	_, _, err := ParseKeyValue("put  ")
+	_, err := ParseKeyValue("put  ")
 
 	if err == nil {
 		t.Error("ParseKeyValue did not return error")
@@ -27,11 +27,35 @@ func TestParseKeyValueReturnsErrorWhenInputDoesNotStartWithSet(t *testing.T) {
 	}
 }
 
+func TestParseKeyValueReturnsErrorWhenInputDoesNotContainEquals(t *testing.T) {
+	_, err := ParseKeyValue("set invalid")
+	if err == nil {
+		t.Error("ParseKeyValue did not return error")
+
+	} else if !strings.Contains(err.Error(), "invalid format: unable to split key and value, missing '='") {
+		t.Error("ParseKeyValue returned incorrect message " + err.Error())
+	}
+}
+
 func TestParseKeyValueDoesNotReturnErrorWhenInputWellFormatted(t *testing.T) {
-	_, _, err := ParseKeyValue("set key=value")
+	_, err := ParseKeyValue("set key=value")
+
+	if err != nil {
+		t.Error("ParseKeyValue returned unexpected error " + err.Error())
+	}
+}
+
+func TestParseKeyValueReturnsExpectedKeyWhenInputWellFormatted(t *testing.T) {
+	pair, err := ParseKeyValue("set key=value")
 
 	if err != nil {
 		t.Error("ParseKeyValue returned unexpected error " + err.Error())
 	}
 
+	if pair.key != "key" {
+		t.Error("key does not match expected value " + pair.key)
+	}
+	if pair.value != "value" {
+		t.Error("key does not match expected value " + pair.value)
+	}
 }
