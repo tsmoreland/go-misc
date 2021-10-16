@@ -25,5 +25,12 @@ func ParseKeyValue(source string) (pair KeyValuePair, err error) {
 		return EmptyKeyValuePair, fmt.Errorf("invalid format: unable to split key and value, missing '='")
 	}
 
-	return KeyValuePair{parts[0], parts[1]}, nil
+	key := strings.TrimSpace(parts[0])
+	value := strings.TrimSpace(parts[1])
+
+	if len(key) == 0 {
+		return EmptyKeyValuePair, fmt.Errorf("invalid format: key cannot be empty")
+	}
+
+	return KeyValuePair{key, value}, nil
 }
