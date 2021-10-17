@@ -13,10 +13,14 @@ func NewKeyValuePair(key, value string) KeyValuePair {
 	return KeyValuePair{key, value}
 }
 
-func (k KeyValuePair) Key() string {
+func (k *KeyValuePair) Key() string {
 	return k.key
 }
 
-func (k KeyValuePair) Value() string {
+func (k *KeyValuePair) Value() string {
 	return k.value
+}
+
+func (k *KeyValuePair) Deconstruct() (string, string) {
+	return k.key, k.value
 }

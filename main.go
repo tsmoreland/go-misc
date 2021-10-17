@@ -30,6 +30,7 @@ func main() {
 			break
 		}
 
-		fmt.Printf("'%s' = '%s'\n", pair.Key(), pair.Value())
+		key, value := pair.Deconstruct()
+		os.Setenv(key, value)
 	}
 }
