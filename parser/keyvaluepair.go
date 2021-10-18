@@ -24,3 +24,7 @@ func (k *KeyValuePair) Value() string {
 func (k *KeyValuePair) Deconstruct() (string, string) {
 	return k.key, k.value
 }
+
+func (k KeyValuePair) Equals(other KeyValuePair) bool {
+	return k.key == other.key && k.value == other.value
+}
