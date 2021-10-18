@@ -11,6 +11,9 @@ import (
 func main() {
 
 	reader := bufio.NewReader(os.Stdin)
+
+	commands := []string{}
+
 	for {
 		line, err := reader.ReadString('\n')
 		if err != nil {
@@ -34,7 +37,11 @@ func main() {
 
 		key, value := pair.Deconstruct()
 
-		fmt.Printf("$env:%s='%s'", key, value)
+		command := fmt.Sprintf("$env:%s='%s'", key, value)
+		commands = append(commands, command)
+	}
 
+	for _, command := range commands {
+		fmt.Printf(command + "\n")
 	}
 }
