@@ -22,15 +22,19 @@ func main() {
 			break
 		}
 
-		fmt.Print(line)
-
 		pair, err := parser.ParseKeyValue(line)
 		if err != nil {
 			fmt.Print(err.Error())
 			break
 		}
 
+		if pair.Equals(parser.EmptyKeyValuePair) {
+			continue
+		}
+
 		key, value := pair.Deconstruct()
-		os.Setenv(key, value)
+
+		fmt.Printf("$env:%s='%s'", key, value)
+
 	}
 }
