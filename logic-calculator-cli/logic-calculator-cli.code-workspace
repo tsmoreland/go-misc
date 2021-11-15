@@ -1,0 +1,39 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/.git": true,
+      "**/.svn": true,
+      "**/.hg": true,
+      "**/CVS": true,
+      "**/.dccache": true,
+      ".gitignore": true,
+    },
+    "[go]": {
+      "editor.tabSize": 4,
+      "editor.insertSpaces": false
+    },
+    "[yaml]": {
+      "editor.tabSize": 2,
+      "editor.insertSpaces": true
+    },
+    "[json]":{
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true
+    },
+    "[xml]": {
+      "editor.tabSize": 2,
+      "editor.insertSpaces": true
+    },
+    "yaml.trace.server": "verbose"
+  },
+  "extensions": {
+    "recommendations": [
+      "golang.Go",
+    ]
+  }
+}
