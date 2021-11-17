@@ -1,6 +1,7 @@
-# go-sample
+# Go samples
 various toy projects in Go
-# GO Command Line Utilities
+
+[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/organization/repository)
 
 ## Logic Calculator CLI Continuous Integration
 
