@@ -1,20 +1,16 @@
-name: Go
+name: GOSAML CI
 
 on:
   push:
     branches: [ main ]
-    paths-ignore: 
-      - '.github/**'
-      - 'README.md'
-      - 'LICENSE'
-      - '*.code-workspace'    
+    paths:
+    - gosaml/**
+    - .github/workflows/gosaml.yml
   pull_request:
     branches: [ main ]
-    paths-ignore: 
-      - '.github/**'
-      - 'README.md'
-      - 'LICENSE'
-      - '*.code-workspace'
+    paths:
+    - gosaml/**
+    - .github/workflows/gosaml.yml
 
 jobs:
 
@@ -30,6 +26,8 @@ jobs:
 
     - name: Build
       run: go build -v ./...
+      working-directory: gosaml
 
     - name: Test
       run: go test -v ./...
+      working-directory: gosaml
