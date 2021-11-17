@@ -5,3 +5,9 @@ various toy projects in Go
 ## Logic Calculator CLI Continuous Integration
 
 Collection of simple utilities which just so happen to be written in Go
+
+## GO SAML
+
+[![GOSAML CI](https://github.com/tsmoreland/go-sample/actions/workflows/gosaml.yml/badge.svg)](https://github.com/tsmoreland/go-sample/actions/workflows/gosaml.yml)
+
+some what pointless cli app to translate unix style set ...=.... command lines to powershell equivalents
