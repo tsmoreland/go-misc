@@ -4,6 +4,8 @@ various toy projects in Go
 
 ## Logic Calculator CLI Continuous Integration
 
+[![Logic Calculator CLI Continuous Integration](https://github.com/tsmoreland/go-sample/actions/workflows/logic-calculator-cli-CI.yml/badge.svg)](https://github.com/tsmoreland/go-sample/actions/workflows/logic-calculator-cli-CI.yml)
+
 Collection of simple utilities which just so happen to be written in Go
 
 ## GO SAML
