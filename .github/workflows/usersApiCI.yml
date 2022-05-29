@@ -4,13 +4,13 @@ on:
   push:
     branches: [ main ]
     paths:
-    - gosaml/**
-    - .github/workflows/gosaml.yml
+    - usersApi/**
+    - .github/workflows/usersApiCI.yml
   pull_request:
     branches: [ main ]
     paths:
     - usersApi/**
-    - .github/workflows/usersApi.yml
+    - .github/workflows/usersApiCI.yml
 
 jobs:
 
