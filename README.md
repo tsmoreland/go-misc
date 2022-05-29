@@ -1,7 +1,7 @@
 # Go samples
 various toy projects in Go
 
-[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/tsmoreland/go-misc)
+[![Open in Visual Studio Code](https://raw.githubusercontent.com/tsmoreland/tsmoreland/main/img/open-with-vscode.svg)](https://open.vscode.dev/tsmoreland/go-misc)
 
 ## Logic Calculator CLI Continuous Integration
 
