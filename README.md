@@ -14,3 +14,9 @@ Collection of simple utilities which just so happen to be written in Go
 [![GOSAML CI](https://github.com/tsmoreland/go-misc/actions/workflows/gosaml.yml/badge.svg)](https://github.com/tsmoreland/go-misc/actions/workflows/gosaml.yml)
 
 some what pointless cli app to translate unix style set ...=.... command lines to powershell equivalents
+
+## usersAPI
+
+[![usersApi CI](https://github.com/tsmoreland/go-misc/actions/workflows/usersApiCI.yml/badge.svg)](https://github.com/tsmoreland/go-misc/actions/workflows/usersApiCI.yml)
+
+simple CRUD REST API, or it will be someday
