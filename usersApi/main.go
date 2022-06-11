@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/gorilla/mux"
+	"net/http"
+	"time"
 	"usersApi/app"
-	"usersApi/domain"
 	"usersApi/infrastructure"
 
 	"database/sql"
@@ -23,7 +25,11 @@ func main() {
 		fmt.Printf("Version: %s", Version)
 	}
 
-	config := app.NewConfigurationBuilder().AddJsonFile("configuration.json").AddEnvironment().Build()
+	config := app.
+		NewConfigurationBuilder().
+		AddJsonFile("configuration.json").
+		AddEnvironment().
+		Build()
 
 	_ = os.Remove(config.DatabaseFile())
 	db, err := sql.Open("sqlite3", config.DatabaseFile())
@@ -38,55 +44,21 @@ func main() {
 		log.Fatal(err)
 	}
 
-	userA := domain.User{
-		Name:     "A",
-		FullName: "Alpha",
+	r := mux.NewRouter()
+	r.
+		Methods("GET", "POST", "PUT", "DELETE").
+		Schemes("http")
+
+	userHandler := app.NewUsersHandler(Version)
+	userHandler.ConfigureHandlers(r)
+
+	serverAddress := fmt.Sprint(":%d", config.Port())
+	server := &http.Server{
+		Handler:      r,
+		Addr:         serverAddress,
+		WriteTimeout: 60 * time.Second,
+		ReadTimeout:  60 * time.Second,
 	}
 
-	userB := domain.User{
-		Name:     "B",
-		FullName: "Bravo",
-	}
-
-	createdA, err := userRepository.Create(userA)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	createdB, err := userRepository.Create(userB)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = userRepository.Delete(createdA.ID)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = userRepository.Delete(createdB.ID)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	/*
-		mux := http.NewServeMux()
-		http.ListenAndServe(fmt.Sprint(":%d", config.Port()), mux)
-	*/
+	log.Fatal(server.ListenAndServe())
 }
-
-/*
-
-func main() {
-	err = userRepository.Delete(createdA.ID)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = userRepository.Delete(createdB.ID)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-
-*/
