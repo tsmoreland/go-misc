@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"usersApi/app"
 	"usersApi/domain"
 	"usersApi/infrastructure"
 
@@ -11,11 +13,20 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-const dbFilename = "users.db"
+var (
+	Version string
+)
 
 func main() {
-	_ = os.Remove(dbFilename)
-	db, err := sql.Open("sqlite3", dbFilename)
+
+	if Version != "" {
+		fmt.Printf("Version: %s", Version)
+	}
+
+	config := app.NewConfigurationBuilder().AddJsonFile("configuration.json").AddEnvironment().Build()
+
+	_ = os.Remove(config.DatabaseFile())
+	db, err := sql.Open("sqlite3", config.DatabaseFile())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -56,6 +67,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	/*
+		mux := http.NewServeMux()
+		http.ListenAndServe(fmt.Sprint(":%d", config.Port()), mux)
+	*/
 }
 
 /*
