@@ -1,4 +1,4 @@
 {
-  "port": 8080,
-  "databaseFilename": "users.db"
+  "databaseFile": "users.db",
+  "port": 8080
 }
