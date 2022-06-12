@@ -10,4 +10,5 @@ type Repository interface {
 	GetByName(name string) (*domain.User, error)
 	Update(id int64, updated domain.User) (*domain.User, error)
 	Delete(id int64) error
+	Close() error
 }
