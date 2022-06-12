@@ -79,6 +79,18 @@ func (repository *SQLiteRepository) All() ([]domain.User, error) {
 	return all, nil
 }
 
+func (repository *SQLiteRepository) GetById(id int64) (*domain.User, error) {
+	row := repository.db.QueryRow("SELECT * FROM users WHERE id = ?", id)
+	var user domain.User
+	if err := row.Scan(&user.ID, &user.Name, &user.FullName); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrorDoesNotExist
+		}
+		return nil, err
+	}
+	return &user, nil
+}
+
 func (repository *SQLiteRepository) GetByName(name string) (*domain.User, error) {
 	row := repository.db.QueryRow("SELECT * FROM users WHERE name = ?", name)
 
