@@ -22,17 +22,68 @@ func NewUsersHandler(version string, repositoryFactory shared.RepositoryFactory)
 }
 
 func (h UsersHandler) ConfigureHandlers(router *mux.Router) {
-
 	router.HandleFunc("/api/v1/users", h.HandlerUsersRoot)
-	router.HandleFunc("/api/v1/users/{id}", h.HandlerUsersRoot)
+	router.HandleFunc("/api/v1/users/{id}", h.HandlerUsersId)
 }
 
 func (h UsersHandler) HandlerUsersRoot(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json; charset=utf-8")
 
+	r, err := h.repositoryFactory.Build()
+	if err != nil {
+		writeError(http.StatusInternalServerError, err, res, "unable to open connection to the database")
+		return
+	}
+	defer r.Close()
+
 	switch req.Method {
 	case http.MethodGet:
+		users, err := r.All()
+		if err != nil {
+			writeError(http.StatusInternalServerError, err, res, "unable to retrieve users")
+		}
+
+		var dtos []UserSummaryDto
+		for _, user := range users {
+			dtos = append(dtos, *NewUserSummaryDto(user.ID, user.Name))
+		}
+		writeResponse(res, http.StatusOK, dtos)
+
 	case http.MethodPost:
+	}
+}
+
+func (h UsersHandler) HandlerUsersId(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+	vars := mux.Vars(req)
+
+	id, success := validateId(vars["id"], res)
+	if !success {
+		return
+	}
+
+	r, err := h.repositoryFactory.Build()
+	if err != nil {
+		writeError(http.StatusInternalServerError, err, res, "unable to open connection to the database")
+		return
+	}
+	defer r.Close()
+
+	u, err := r.GetById(int64(id))
+	if err != nil {
+		writeError(http.StatusNotFound, err, res, "user not found")
+	}
+
+	switch req.Method {
+	case http.MethodGet:
+		writeResponse(res, http.StatusOK, NewUserDto(*u))
+	case http.MethodPut:
+		// TODO: we need to update u with a body of request
+
+	case http.MethodDelete:
+		_ = r.Delete(int64(id))
+		writeResponse(res, http.StatusNoContent, nil)
 	}
 }
 
@@ -49,58 +100,25 @@ func validateId(idParameter string, res http.ResponseWriter) (int, bool) {
 	return 0, false
 }
 
-func internalServerError(res http.ResponseWriter, message string) {
-	res.WriteHeader(http.StatusInternalServerError)
-	res.Write([]byte(fmt.Sprintf("{\"error\":\"%s\"}", message)))
-
-}
-
-func failed(statusCode int, res http.ResponseWriter, message string) {
-	res.WriteHeader(statusCode)
-	res.Write([]byte(fmt.Sprintf("{\"error\":\"%s\"}", message)))
-}
-func successful(res http.ResponseWriter, statusCode int, content []byte) {
-	res.WriteHeader(statusCode)
-	res.Write(content)
-}
-
-func (h UsersHandler) HandlerUsersId(res http.ResponseWriter, req *http.Request) {
-	res.Header().Set("Content-Type", "application/json; charset=utf-8")
-
-	vars := mux.Vars(req)
-
-	id, success := validateId(vars["id"], res)
-	if !success {
-		return
-	}
-
-	r, err := h.repositoryFactory.Build()
+func writeError(statusCode int, err error, res http.ResponseWriter, message string) {
 	if err != nil {
 		log.Print(err.Error())
-		internalServerError(res, "unable to open connection to the database")
+	}
+
+	res.WriteHeader(statusCode)
+	res.Write([]byte(fmt.Sprintf("{\"error\":\"%s\"}", message)))
+}
+func writeResponse(res http.ResponseWriter, statusCode int, content any) {
+	if content == nil {
+		res.WriteHeader(statusCode)
 		return
 	}
 
-	_ = id
-	_ = r
-
-	switch req.Method {
-	case http.MethodGet:
-		u, err := r.GetById(int64(id))
-		if err != nil {
-			failed(http.StatusNotFound, res, "user not found")
-		} else {
-			serialized, err := json.Marshal(u)
-			// TODO: rework this to pass the u in as an any and let succeeded handle the serialize failure
-			if err != nil {
-				log.Print(err.Error())
-				internalServerError(res, "unable to serialized user")
-			} else {
-				successful(res, http.StatusOK, serialized)
-			}
-		}
-
-	case http.MethodPut:
-	case http.MethodDelete:
+	serialized, err := json.Marshal(content)
+	if err != nil {
+		writeError(http.StatusInternalServerError, err, res, "serialization failure")
+	} else {
+		res.WriteHeader(statusCode)
+		res.Write(serialized)
 	}
 }
