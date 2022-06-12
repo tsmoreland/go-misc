@@ -33,15 +33,12 @@ func main() {
 
 	_ = os.Remove(config.DatabaseFile())
 	db, err := sql.Open("sqlite3", config.DatabaseFile())
-	// TODO:
-	// add method, maybe to factory handle the db migration and update repository to include a Close that can be
-	// deferred
-	defer db.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	var userRepository shared.Repository = infrastructure.NewSQLiteRepository(db)
+	defer userRepository.Close()
 
 	err = userRepository.Migrate()
 	if err != nil {
@@ -49,15 +46,28 @@ func main() {
 	}
 
 	r := mux.NewRouter()
-	r.
-		Methods("GET", "POST", "PUT", "DELETE").
-		Schemes("http")
+	//r.Schemes("http")
 
 	var repositoryFactory shared.RepositoryFactory = infrastructure.
 		NewSqliteRepositoryFactory(config.DatabaseFile())
 
 	userHandler := app.NewUsersHandler(Version, repositoryFactory)
 	userHandler.ConfigureHandlers(r)
+
+	r.
+		HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+			w.Write([]byte("Hello"))
+		}).
+		Methods("GET")
+	r.
+		HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNotFound)
+			w.Header().Set("Content-Type", "application/json; charset=utf-8")
+			w.Write([]byte("{}"))
+		}).
+		Methods("GET")
 
 	serverAddress := fmt.Sprintf(":%d", config.Port())
 	server := &http.Server{
@@ -66,6 +76,7 @@ func main() {
 		WriteTimeout: 60 * time.Second,
 		ReadTimeout:  60 * time.Second,
 	}
+	//http.ListenAndServe(serverAddress, r)
 
 	log.Fatal(server.ListenAndServe())
 }
