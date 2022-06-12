@@ -32,6 +32,12 @@ func (repository *SQLiteRepository) Migrate() error {
 	);
 	`
 	_, err := repository.db.Exec(command)
+
+	if err == nil {
+		user := domain.User{Name: "Bruce", FullName: "Bruce Wayne"}
+		_, _ = repository.Create(user)
+	}
+
 	return err
 }
 
