@@ -149,3 +149,7 @@ func (repository *SQLiteRepository) Delete(id int64) error {
 
 	return err
 }
+
+func (repository *SQLiteRepository) Close() error {
+	return repository.db.Close()
+}
