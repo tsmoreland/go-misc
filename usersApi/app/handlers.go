@@ -27,6 +27,7 @@ func (h UsersHandler) ConfigureHandlers(router *mux.Router) {
 }
 
 func (h UsersHandler) HandlerUsersRoot(res http.ResponseWriter, req *http.Request) {
+
 	res.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 	r, err := h.repositoryFactory.Build()
@@ -34,7 +35,9 @@ func (h UsersHandler) HandlerUsersRoot(res http.ResponseWriter, req *http.Reques
 		writeError(http.StatusInternalServerError, err, res, "unable to open connection to the database")
 		return
 	}
-	defer r.Close()
+	defer func() {
+		err = r.Close()
+	}()
 
 	switch req.Method {
 	case http.MethodGet:
@@ -68,7 +71,9 @@ func (h UsersHandler) HandlerUsersId(res http.ResponseWriter, req *http.Request)
 		writeError(http.StatusInternalServerError, err, res, "unable to open connection to the database")
 		return
 	}
-	defer r.Close()
+	defer func() {
+		err = r.Close()
+	}()
 
 	u, err := r.GetById(int64(id))
 	if err != nil {
@@ -106,7 +111,7 @@ func writeError(statusCode int, err error, res http.ResponseWriter, message stri
 	}
 
 	res.WriteHeader(statusCode)
-	res.Write([]byte(fmt.Sprintf("{\"error\":\"%s\"}", message)))
+	_, _ = res.Write([]byte(fmt.Sprintf("{\"error\":\"%s\"}", message)))
 }
 func writeResponse(res http.ResponseWriter, statusCode int, content any) {
 	if content == nil {
@@ -119,6 +124,6 @@ func writeResponse(res http.ResponseWriter, statusCode int, content any) {
 		writeError(http.StatusInternalServerError, err, res, "serialization failure")
 	} else {
 		res.WriteHeader(statusCode)
-		res.Write(serialized)
+		_, _ = res.Write(serialized)
 	}
 }
