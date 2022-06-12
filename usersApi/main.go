@@ -19,6 +19,33 @@ var (
 	Version string
 )
 
+func migrateDb(filename string) error {
+	_ = os.Remove(filename)
+	db, err := sql.Open("sqlite3", filename)
+	if err != nil {
+		return err
+	}
+
+	var userRepository shared.Repository = infrastructure.NewSQLiteRepository(db)
+	defer func() {
+		err = userRepository.Close()
+	}()
+
+	err = userRepository.Migrate()
+	if err != nil {
+		return err
+	}
+
+	users, err := userRepository.All()
+	if err != nil {
+		for _, user := range users {
+			fmt.Printf("%d = %s\n", user.ID, user.Name)
+		}
+	}
+
+	return nil
+}
+
 func main() {
 
 	if Version != "" {
@@ -31,16 +58,7 @@ func main() {
 		AddEnvironment().
 		Build()
 
-	_ = os.Remove(config.DatabaseFile())
-	db, err := sql.Open("sqlite3", config.DatabaseFile())
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var userRepository shared.Repository = infrastructure.NewSQLiteRepository(db)
-	defer userRepository.Close()
-
-	err = userRepository.Migrate()
+	err := migrateDb(config.DatabaseFile())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -55,17 +73,10 @@ func main() {
 	userHandler.ConfigureHandlers(r)
 
 	r.
-		HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusOK)
-			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-			w.Write([]byte("Hello"))
-		}).
-		Methods("GET")
-	r.
 		HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
 			w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			w.Write([]byte("{}"))
+			_, _ = w.Write([]byte("{}"))
 		}).
 		Methods("GET")
 
