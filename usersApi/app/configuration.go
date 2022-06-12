@@ -49,15 +49,20 @@ func (b *ConfigurationBuilder) AddJsonFile(filename string) *ConfigurationBuilde
 		b.err = err
 		return b
 	}
-	fileConfig := jsonConfiguration{}
+
+	var fileConfig jsonConfiguration
 	err = json.Unmarshal(content, &fileConfig)
 	if err != nil {
 		b.err = err
 		return b
 	}
 
-	b.config.port = fileConfig.Port
-	b.config.databaseFile = fileConfig.DatabaseFile
+	if fileConfig.Port != 0 {
+		b.config.port = fileConfig.Port
+	}
+	if fileConfig.DatabaseFile != "" {
+		b.config.databaseFile = fileConfig.DatabaseFile
+	}
 	return b
 }
 
@@ -66,16 +71,30 @@ func (b *ConfigurationBuilder) AddEnvironment() *ConfigurationBuilder {
 	if b.err != nil {
 		return b
 	}
-	value := os.Getenv("USERAPI:PORT")
-	port, err := strconv.Atoi(value)
-	if err != nil {
-		port = 8080
+	port := 0
+	databaseFile := ""
+	var err error
+
+	value, present := os.LookupEnv("USERAPI:PORT")
+	if present {
+		port, err = strconv.Atoi(value)
+		if err != nil {
+			port = 0
+		}
 	}
 
-	databaseFile := os.Getenv("USERAPI:DATABASEFILE")
+	value, present = os.LookupEnv("USERAPI:DATABASEFILE")
+	if present {
+		databaseFile = value
+	}
 
-	b.config.port = port
-	b.config.databaseFile = databaseFile
+	if port != 0 {
+		b.config.port = port
+	}
+
+	if databaseFile != "" {
+		b.config.databaseFile = databaseFile
+	}
 
 	return b
 }
