@@ -53,6 +53,19 @@ func (h UsersHandler) HandlerUsersRoot(res http.ResponseWriter, req *http.Reques
 		writeResponse(res, http.StatusOK, dtos)
 
 	case http.MethodPost:
+		var dto UserInputDto
+		err := json.NewDecoder(req.Body).Decode(&dto)
+		if err != nil {
+			writeError(http.StatusBadRequest, err, res, "input input")
+		}
+
+		user, err := r.Create(*dto.BuildUser())
+		if err != nil {
+			writeError(http.StatusInternalServerError, err, res, "failed to add user")
+		}
+
+		createdDto := NewUserDto(*user)
+		writeResponse(res, http.StatusCreated, createdDto)
 	}
 }
 
