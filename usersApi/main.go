@@ -9,6 +9,7 @@ import (
 	"os"
 	"time"
 	"usersApi/app"
+	"usersApi/app/middleware"
 	"usersApi/infrastructure"
 	"usersApi/shared"
 
@@ -79,6 +80,7 @@ func main() {
 			_, _ = w.Write([]byte("{}"))
 		}).
 		Methods("GET")
+	r.Use(middleware.OwaspRecommendedApiHeaders)
 
 	serverAddress := fmt.Sprintf(":%d", config.Port())
 	server := &http.Server{
