@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"usersApi/app/models"
 	"usersApi/shared"
 	//"usersApi/domain"
 )
@@ -46,14 +47,14 @@ func (h UsersHandler) HandlerUsersRoot(res http.ResponseWriter, req *http.Reques
 			writeError(http.StatusInternalServerError, err, res, "unable to retrieve users")
 		}
 
-		var dtos []UserSummaryDto
+		var dtos []models.UserSummaryDto
 		for _, user := range users {
-			dtos = append(dtos, *NewUserSummaryDto(user.ID, user.Name))
+			dtos = append(dtos, *models.NewUserSummaryDto(user.ID, user.Name))
 		}
 		writeResponse(res, http.StatusOK, dtos)
 
 	case http.MethodPost:
-		var dto UserInputDto
+		var dto models.UserInputDto
 		err := json.NewDecoder(req.Body).Decode(&dto)
 		if err != nil {
 			writeError(http.StatusBadRequest, err, res, "input input")
@@ -64,7 +65,7 @@ func (h UsersHandler) HandlerUsersRoot(res http.ResponseWriter, req *http.Reques
 			writeError(http.StatusInternalServerError, err, res, "failed to add user")
 		}
 
-		createdDto := NewUserDto(*user)
+		createdDto := models.NewUserDto(*user)
 		writeResponse(res, http.StatusCreated, createdDto)
 	}
 }
@@ -95,7 +96,7 @@ func (h UsersHandler) HandlerUsersId(res http.ResponseWriter, req *http.Request)
 
 	switch req.Method {
 	case http.MethodGet:
-		writeResponse(res, http.StatusOK, NewUserDto(*u))
+		writeResponse(res, http.StatusOK, models.NewUserDto(*u))
 	case http.MethodPut:
 		// TODO: we need to update u with a body of request
 

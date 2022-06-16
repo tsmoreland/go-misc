@@ -65,7 +65,6 @@ func main() {
 	}
 
 	r := mux.NewRouter()
-	//r.Schemes("http")
 
 	var repositoryFactory shared.RepositoryFactory = infrastructure.
 		NewSqliteRepositoryFactory(config.DatabaseFile())
