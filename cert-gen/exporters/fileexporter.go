@@ -2,6 +2,7 @@ package exporters
 
 import (
 	"bytes"
+	"encoding/pem"
 	"os"
 	"path/filepath"
 )
@@ -30,18 +31,24 @@ func NewFileExporter(folder string) (*FileExporter, error) {
 }
 
 func (e FileExporter) ExportCertificate(source []byte, buffer *bytes.Buffer) error {
-
-	buffer.Reset()
-	return nil
+	defer buffer.Reset()
+	return writePemFile(e.certificateFile, buffer, "CERTIFICATE", source)
 }
 
 func (e FileExporter) ExportPrivateKey(source []byte, buffer *bytes.Buffer) error {
-	buffer.Reset()
-	return nil
+	defer buffer.Reset()
+	return writePemFile(e.certificateKeyFile, buffer, "RSA PRIVATE KEY", source)
 }
 
 func (e FileExporter) ExportCertificateSigningRequest(source []byte, buffer *bytes.Buffer) error {
+	defer buffer.Reset()
+	return writePemFile(e.certificateRequestFile, buffer, "CERTIFICATE REQUEST", source)
+}
 
-	buffer.Reset()
-	return nil
+func writePemFile(filename string, buffer *bytes.Buffer, pemLabel string, source []byte) error {
+	if err := pem.Encode(buffer, &pem.Block{Type: pemLabel, Bytes: source}); err != nil {
+		return err
+	}
+
+	return os.WriteFile(filename, buffer.Bytes(), 0644)
 }

@@ -11,7 +11,14 @@ import (
 )
 
 var (
-	localhostSubject = &pkix.Name{CommonName: "localhost"}
+	localhostSubject = &pkix.Name{
+		CommonName:         "localhost",
+		OrganizationalUnit: []string{""},
+		Organization:       []string{""},
+		Locality:           []string{""},
+		Province:           []string{""},
+		Country:            []string{""},
+	}
 )
 
 const (
@@ -28,12 +35,17 @@ func NewLocalhostCertificateWithDuration(bitSize int, validFor time.Duration) (*
 		return nil, nil, err
 	}
 
+	serialNumber, err := rand.Int(rand.Reader, big.NewInt(200000000))
+	if err != nil {
+		return nil, nil, err
+	}
+
 	template := &x509.Certificate{
-		SerialNumber:          big.NewInt(1),
+		SerialNumber:          serialNumber,
 		Subject:               *localhostSubject,
 		NotBefore:             time.Now(),
 		NotAfter:              time.Now().Add(validFor),
-		KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
+		KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature | x509.KeyUsageDataEncipherment | x509.KeyUsageContentCommitment,
 		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth, x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageTimeStamping},
 		BasicConstraintsValid: true,
 	}

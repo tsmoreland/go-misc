@@ -10,17 +10,11 @@ import (
 )
 
 func main() {
-
 	if len(os.Args) < 2 {
 		log.Fatal("Insufficient Arguments")
 	}
 
 	exporter, err := exporters.NewFileExporter(os.Args[1])
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	template, privateKey, err := certificatetemplates.NewLocalhostCertificate(4096)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -48,31 +42,4 @@ func main() {
 		log.Fatal(err)
 	}
 	out.Reset()
-
-	/*
-
-		requestTemplate := certificatetemplates.NewLocalhostSigningRequest()
-
-		csrBytes, err := x509.CreateCertificateRequest(rand.Reader, requestTemplate, privateKey)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
-		pem.Encode(out, &pem.Block{Type: "CERTIFICATE REQUEST", Bytes: csrBytes})
-		fmt.Println(out.String())
-		out.Reset()
-
-		derBytes, err := x509.CreateCertificate(rand.Reader, template, template, &privateKey.PublicKey, privateKey)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
-		pem.Encode(out, &pem.Block{Type: "CERTIFICATE", Bytes: derBytes})
-		fmt.Println(out.String())
-		out.Reset()
-
-		pem.Encode(out, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(privateKey)})
-		fmt.Println(out.String())
-		out.Reset()
-	*/
 }
