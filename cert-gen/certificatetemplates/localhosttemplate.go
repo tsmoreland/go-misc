@@ -10,9 +10,13 @@ import (
 	"time"
 )
 
+const (
+	localHostname = "localhost"
+)
+
 var (
 	localhostSubject = &pkix.Name{
-		CommonName:         "localhost",
+		CommonName:         localHostname,
 		OrganizationalUnit: []string{""},
 		Organization:       []string{""},
 		Locality:           []string{""},
@@ -48,6 +52,7 @@ func NewLocalhostCertificateWithDuration(bitSize int, validFor time.Duration) (*
 		KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature | x509.KeyUsageDataEncipherment | x509.KeyUsageContentCommitment,
 		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth, x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageTimeStamping},
 		BasicConstraintsValid: true,
+		DNSNames:              []string{localHostname},
 	}
 
 	return template, privateKey, nil
