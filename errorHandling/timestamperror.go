@@ -1,7 +1,9 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"log"
 	"time"
 )
 
@@ -31,4 +33,23 @@ func (e TimestampedError) Error() string {
 //	can be used for equality checks with go-cmp
 func (e TimestampedError) Equal(other TimestampedError) bool {
 	return e.message == other.message
+}
+
+// DemoTimestampedError demonstrates use of timestamped error handling
+func DemoTimestampedError() {
+	divide := func(a int, b int) (int, error) {
+		if b == 0 {
+			return 0, NewTimestampedError("cannot divide by zero")
+		}
+		return a / b, nil
+	}
+	result, err := divide(1, 0)
+	var timestampedError *TimestampedError
+	if errors.As(err, &timestampedError) {
+		log.Fatalf("error with time: %v", timestampedError)
+	} else if err != nil {
+		log.Fatal(err)
+	} else {
+		fmt.Println(result)
+	}
 }
