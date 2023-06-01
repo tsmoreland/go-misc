@@ -35,3 +35,9 @@ func (w *Wind) Print() string {
 func PrintGeneric[T any](t T) string {
 	return fmt.Sprintf("%s - %v\n", kinetecoPrint, t)
 }
+
+func PrintSlice[T any](t []T) {
+	for idx, itm := range t {
+		fmt.Printf("%d - %v", idx, PrintGeneric(itm))
+	}
+}
