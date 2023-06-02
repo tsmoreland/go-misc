@@ -22,6 +22,17 @@ func main() {
 
 	fmt.Println("Challenge Chapter 1:")
 	ss := []business.Solar{solar2k, solar3k}
-	business.PrintSlice(ss) // generic type [business.Solar] is optional as it can be inferred from ss
+	business.PrintSlice[business.Solar](ss) // generic type [business.Solar] is optional as it can be inferred from ss
 	business.PrintSlice[business.Wind]([]business.Wind{windwest, windwest})
+
+	cost := business.Cost(10, solar2k.Netto)
+	fmt.Printf("solar2k cost for 10 uses: %v", cost)
+
+	fmt.Println("Chapter 3")
+	// cost := business.Cost(0.45, 10) -- compiler error because T can't be inferred float64 != int
+	cost = business.Cost(0.45, float64(10)) // work-around #1 cast to the intended type, so it can be inferred
+	cost = business.Cost[float64](0.45, 10) // work-around #2 be explicit about generic type
+	fmt.Printf("cost for 0.45 uses at 10 per unit: %v", cost)
+
+	business.PrintSlice2(ss)
 }

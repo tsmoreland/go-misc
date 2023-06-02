@@ -53,7 +53,21 @@ func PrintGeneric[T any](t T) string {
 //	using T Energy rather than any for a more specific or
 //	constrained generic
 func PrintSlice[T Energy](t []T) {
+	typeOfT := fmt.Sprintf("%T", t)
 	for idx, itm := range t {
-		fmt.Printf("%d - %v", idx, PrintGeneric(itm))
+		fmt.Printf("%d (%v): %v", idx, typeOfT, PrintGeneric(itm))
+	}
+}
+
+// PrintSlice2 uses a second constraint to replace []T as a slice of all items
+//
+//	that could be T (the ~ operator).
+//	What this means is if we had say type myString string and string then
+//	the constraint ~string would also match myString because it approximates
+//	string
+func PrintSlice2[T Energy, S ~[]T](t S) {
+	typeOfT := fmt.Sprintf("%T", t)
+	for idx, itm := range t {
+		fmt.Printf("%d (%v): %v", idx, typeOfT, PrintGeneric(itm))
 	}
 }
