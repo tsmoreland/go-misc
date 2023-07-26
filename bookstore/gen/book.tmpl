@@ -1,0 +1,42 @@
+// DO NOT EDIT GENERATED FILE
+
+package main
+
+import (
+"html/template"
+"net/http"
+
+"github.com/gorilla/mux"
+)
+
+type {{ .Name }} struct {
+ID int
+{{ range .Fields -}}
+{{ .Name }} {{ .Type }}
+{{ end -}}
+}
+
+type {{ .Name }}Handler struct {
+tmpl  *template.Template
+{{ .Name | toLower }}s []{{ .Name }}
+}
+
+func New{{ .Name }}Handler(tmpl *template.Template) (h *{{ .Name }}Handler, err error) {
+h = &{{ .Name }}Handler {
+tmpl: tmpl,
+{{ .Name | toLower }}s : []{{ .Name }} {
+{ ID: 1, Name: "The Alchemist" },
+{ ID: 2, Name: "Atomic Habits" },
+},
+}
+
+return h, nil
+}
+
+func (h *{{ .Name }}Handler) RegisterHandlers(rtr *mux.Router) {
+rtr.HandleFunc("/{{ .Name | toLower }}s", h.get{{ .Name }}s).Methods("GET")
+}
+
+func (h *{{ .Name }}Handler) get{{ .Name }}s(w http.ResponseWriter, r *http.Request) {
+h.tmpl.ExecuteTemplate(w, "{{ .Name | toLower }}s.html", h.{{ .Name | toLower }}s)
+}
