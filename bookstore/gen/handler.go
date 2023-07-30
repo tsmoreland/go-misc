@@ -5,6 +5,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"go/format"
 	"html/template"
 	"os"
@@ -33,6 +34,16 @@ func main() {
 
 	funcMap := template.FuncMap{
 		"toLower": strings.ToLower,
+	}
+
+	if strings.Contains(schemaPath, "..") {
+		panic(fmt.Errorf("Relative paths are not permitted"))
+	}
+	if strings.Contains(templatePath, "..") {
+		panic(fmt.Errorf("Relative paths are not permitted"))
+	}
+	if strings.Contains(outputPath, "..") {
+		panic(fmt.Errorf("Relative paths are not permitted"))
 	}
 
 	tmpl := template.Must(template.New("handler").Funcs(funcMap).ParseFiles(templatePath))
