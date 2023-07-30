@@ -9,6 +9,7 @@ package main
 import (
     "fmt"
     "html/template"
+    "math/rand"
     "net/http"
     "strconv"
     "time"
@@ -19,8 +20,11 @@ import (
 type {{ .Name }} struct {
     ID int
     {{ range .Fields -}}
-    {{ .Name }} {{ .Type }}
+        {{ .Name }} {{ .Type }}
     {{ end -}}
+    {{ if (eq .Name "Book") -}}
+    Stock int
+    {{end -}}
 }
 
 type {{ $handler }} struct {
@@ -89,6 +93,9 @@ func (h *{{ $handler }}) get{{ .Name }}(w http.ResponseWriter, r *http.Request) 
             w.WriteHeader(http.StatusNotFound)
             fmt.Fprintf(w, "{{ .Name }} not Found")
         } else {
+            {{ if (eq .Name "Book") }}
+                {{$lowerName}}.Stock = rand.Intn(5)
+            {{end }}
             h.tmpl.ExecuteTemplate(w, "{{ $lowerName }}.html", {{ $lowerName }})
         }
     }
@@ -101,7 +108,11 @@ func (h *{{ $handler }}) submit{{ .Name }}(w http.ResponseWriter, r *http.Reques
     id, _ := strconv.Atoi(vars["id"])
 
     {{ range .Fields -}}
-    {{ .Name | toLower }} := r.Form.Get("{{ .Name | toLower }}")
+        {{ if (eq .Type "int" ) }}
+        {{ .Name | toLower }}, _ := strconv.Atoi(r.Form.Get("{{ .Name | toLower }}"))
+        {{ else }}
+        {{ .Name | toLower }} := r.Form.Get("{{ .Name | toLower }}")
+        {{ end }}
     {{ end -}}
 
     if id == 0 {

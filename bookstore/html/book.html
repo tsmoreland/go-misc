@@ -17,7 +17,26 @@
     <label>Overview:</label><br/>
     <textarea name="overview">{{ .Overview }}</textarea><br/>
     <label>Year:</label><br/>
-    <input name="year" type="number" value=""></input><br/>
+    <input name="year" type="number" value="{{ .Year }}"></input><br/>
+    <p>
+    <span class="star-rating">
+        Dislike
+        <input type="radio" name="rating" value="1" {{ if ( eq .Rating 1 ) }} checked {{ end }}>
+        </input>
+        <input type="radio" name="rating" value="2" {{ if ( eq .Rating 2 ) }} checked {{ end }}>
+        </input>
+        <input type="radio" name="rating" value="3" {{ if ( eq .Rating 3 ) }} checked {{ end }}>
+        </input>
+        Like
+    </span>
+    </p>
+    <p>
+        {{ if (le .Stock 0) }}
+        Out of Stock
+        {{ else }}
+        In Stock
+        {{ end }}
+    </p>
     <hr />
     <input type="submit" value="Submit"></input>
 </form>

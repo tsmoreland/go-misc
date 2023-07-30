@@ -1,2 +1,4 @@
 me string TEXT
 Overview string TEXT
+Year int INTEGER
+Rating int INTEGER

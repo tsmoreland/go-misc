@@ -5,6 +5,7 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"time"
@@ -16,6 +17,9 @@ type Book struct {
 	ID       int
 	me       string
 	Overview string
+	Year     int
+	Rating   int
+	Stock    int
 }
 
 type BookHandler struct {
@@ -28,6 +32,8 @@ func NewBookHandler(repo *Repo, tmpl *template.Template) (h *BookHandler, err er
                   id INTEGER PRIMARY KEY AUTOINCREMENT,
                   book TEXT
                   book TEXT
+                  book INTEGER
+                  book INTEGER
                   timestamp DATETIME NOT NULL
                   )`
 	if _, err := repo.Exec(createSql); err != nil {
@@ -58,7 +64,7 @@ func (h *BookHandler) getBooks(w http.ResponseWriter, r *http.Request) {
 		book := Book{}
 		err := rows.Scan(
 			&book.ID,
-			&book.me, &book.Overview, &book.Timestamp)
+			&book.me, &book.Overview, &book.Year, &book.Rating, &book.Timestamp)
 
 		books = append(books, book)
 	}
@@ -76,11 +82,14 @@ func (h *BookHandler) getBook(w http.ResponseWriter, r *http.Request) {
 		book := Book{}
 		err := row.Scan(
 			&book.ID,
-			&me.me, &overview.Overview, &book.Timestamp)
+			&me.me, &overview.Overview, &year.Year, &rating.Rating, &book.Timestamp)
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
 			fmt.Fprintf(w, "Book not Found")
 		} else {
+
+			book.Stock = rand.Intn(5)
+
 			h.tmpl.ExecuteTemplate(w, "book.html", book)
 		}
 	}
@@ -93,17 +102,23 @@ func (h *BookHandler) submitBook(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(vars["id"])
 
 	me := r.Form.Get("me")
+
 	overview := r.Form.Get("overview")
+
+	year, _ := strconv.Atoi(r.Form.Get("year"))
+
+	rating, _ := strconv.Atoi(r.Form.Get("rating"))
+
 	if id == 0 {
-		execSQL := `INSERT INTO Books VALUES (NULL,  ?,  ?, ?);`
-		_, err := h.repo.Exec(execSQL, me, overview, time.Now())
+		execSQL := `INSERT INTO Books VALUES (NULL,  ?,  ?,  ?,  ?, ?);`
+		_, err := h.repo.Exec(execSQL, me, overview, year, rating, time.Now())
 		if err != nil {
 			panic(err)
 		}
 	} else {
-		execSQL := `UPDATE Books SET me = ?, overview = ?, timestamp = ?
+		execSQL := `UPDATE Books SET me = ?, overview = ?, year = ?, rating = ?, timestamp = ?
                     WHERE (id = ?);`
-		_, err := h.repo.Exec(execSQL, me, overview, time.Now(), id)
+		_, err := h.repo.Exec(execSQL, me, overview, year, rating, time.Now(), id)
 		if err != nil {
 			panic(err)
 		}
